@@ -14,25 +14,36 @@ public class ClickingButton : MonoBehaviour
     [Header("Texts")]
     public TextMeshProUGUI ClickText;
     public TextMeshProUGUI Upgrade1Am;
+    public TextMeshProUGUI Upgrade1CostText;
+    public TextMeshProUGUI Upgrade2Am;
+    public TextMeshProUGUI Upgrade2CostText;
 
     [Header("Upgrades")]
     public ulong Upgrade1 = 0;
+    public ulong Upgrade2 = 0;
 
     [Header("Upgrade Checkers")]
     public bool ownedAm1 = false;
     public bool hasUpgrades = false;
+    public bool ownedAm2 = false;
 
     [Header("Variable Values")]
     public ulong clicks = 0;
+    public double Upgrade1CostMult;
+    public ulong Upgrade1Cost = 100;
+    public double Upgrade2CostMult;
+    public ulong Upgrade2Cost = 2500;
 
     [Header("Other")]
     public bool shouldtrigger = false;
+    public bool shouldtRiggerII = false;
 
     #endregion
-    //Establishes the buttons and their functions
+
+    // In Start(), remove any existing listeners before adding the new one
     void Start()
     {
-        ClickButton.onClick.AddListener(OnButtonClicked);
+        ClickButton.onClick.AddListener(OnButtonClicked); 
         Upgrade1button.onClick.AddListener(PurchaseUpgrade1);
     }
 
@@ -41,15 +52,48 @@ public class ClickingButton : MonoBehaviour
     void Update()
     {
         ClickText.text = clicks.ToString();
+        Upgrade1CostText.text = Upgrade1Cost.ToString();
+        Upgrade1Am.text = Upgrade1.ToString();
+        Upgrade2Am.text = Upgrade2.ToString();
+
         if (hasUpgrades)
         {
             if (ownedAm1)
             {
+                if (Upgrade1 == 1)
+                {
+                    Upgrade1CostMult = 1.4;
+                }
+                else
+                {
+                    Upgrade1CostMult = 1.4 * (Upgrade1 * 1.05);
+                }
+                Upgrade1Cost = (ulong)(100 * (Upgrade1CostMult * Upgrade1));
                 if (shouldtrigger == true)
                 {
                     clicks = clicks + Upgrade1;
                     shouldtrigger = false;
                 }
+                if (ownedAm2)
+                {
+                    if (Upgrade2 == 1)
+                    {
+                        Upgrade2CostMult = 1.4;
+                    }
+                    else
+                    {
+                        Upgrade2CostMult = 1.4 * (Upgrade2 * 1.05);
+                    }
+                    Upgrade2Cost = (ulong)(2500 * (Upgrade2CostMult * Upgrade2));
+
+                    if (shouldtRiggerII == true)
+                    {
+                        clicks = clicks + 10;
+                    }
+
+                }
+
+
             }
             shouldtrigger = false;
         }
@@ -63,12 +107,16 @@ public class ClickingButton : MonoBehaviour
     public void OnButtonClicked()
     {
         clicks++;
-        shouldtrigger = true;
+        Debug.Log("This is triggered");
+        if (hasUpgrades == true)
+        {
+           shouldtrigger = true; 
+        }
     }
 
     public void PurchaseUpgrade1()
     {
-        if (clicks < 100)
+        if (clicks < Upgrade1Cost)
         {
             return;
         }
@@ -76,14 +124,16 @@ public class ClickingButton : MonoBehaviour
         {
             hasUpgrades = true;
             ownedAm1 = true;
-            clicks = clicks - 100;
+            clicks = clicks - Upgrade1Cost;
             Upgrade1 = Upgrade1 + 1;
-            Upgrade1Am.text = Upgrade1.ToString();
-            
-
         }
 
     }
 
-
+    private System.Collections.IEnumerator OneSecond(bool shouldtRiggerII)
+    {
+        yield return new WaitForSeconds(1);
+         shouldtRiggerII = true;
+    }
 }
+

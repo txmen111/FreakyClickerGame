@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEditor.Experimental.GraphView;
+using JetBrains.Annotations;
 public class ClickingButton : MonoBehaviour
 {
     #region //Variables
@@ -10,6 +11,7 @@ public class ClickingButton : MonoBehaviour
     [Header("Buttons")]
     public Button ClickButton;
     public Button Upgrade1button;
+    public Button Upgrade2button;
 
     [Header("Texts")]
     public TextMeshProUGUI ClickText;
@@ -36,7 +38,7 @@ public class ClickingButton : MonoBehaviour
 
     [Header("Other")]
     public bool shouldtrigger = false;
-    public bool shouldtRiggerII = false;
+    public bool shouldtrigger2 = false;
 
     #endregion
 
@@ -86,8 +88,9 @@ public class ClickingButton : MonoBehaviour
                     }
                     Upgrade2Cost = (ulong)(2500 * (Upgrade2CostMult * Upgrade2));
 
-                    if (shouldtRiggerII == true)
+                    if (shouldtrigger2 == true)
                     {
+                        StartCoroutine(OneSecond(shouldtrigger2));
                         clicks = clicks + 10;
                     }
 
@@ -128,12 +131,30 @@ public class ClickingButton : MonoBehaviour
             Upgrade1 = Upgrade1 + 1;
         }
 
+        
+
     }
 
-    private System.Collections.IEnumerator OneSecond(bool shouldtRiggerII)
+    public void PurchaseUpgrade2()
+    {
+        if (clicks < Upgrade2Cost)
+        {
+            return;
+        }
+        else
+        {
+            hasUpgrades = true;
+            ownedAm2 = true;
+            clicks -= Upgrade2Cost;
+            Upgrade2 = Upgrade2 + 1;
+        }
+    }
+
+
+    private System.Collections.IEnumerator OneSecond(bool shouldtrigger2)
     {
         yield return new WaitForSeconds(1);
-         shouldtRiggerII = true;
+         shouldtrigger2 = true;
     }
 }
 
